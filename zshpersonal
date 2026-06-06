@@ -1,0 +1,152 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+sudo pacman -S --needed \
+  zsh \
+  starship \
+  zsh-completions \
+  zsh-autosuggestions \
+  zsh-syntax-highlighting \
+  ttf-jetbrains-mono-nerd \
+  git \
+  python
+
+mkdir -p "$HOME/.config"
+
+[ -f "$HOME/.config/starship.toml" ] && \
+  cp "$HOME/.config/starship.toml" "$HOME/.config/starship.toml.backup.$(date +%F_%H-%M-%S)"
+
+[ -f "$HOME/.zshrc" ] && \
+  cp "$HOME/.zshrc" "$HOME/.zshrc.backup.$(date +%F_%H-%M-%S)"
+
+cat > "$HOME/.config/starship.toml" <<'EOF'
+add_newline = false
+command_timeout = 1000
+
+format = "[\ue0b6](fg:#bd93f9)$os$username$hostname[\ue0b0](fg:#bd93f9 bg:#2b213a)$directory$git_branch$git_status$python$nodejs$cmd_duration$status[\ue0b0](fg:#2b213a)$character"
+
+[os]
+disabled = false
+style = "bg:#bd93f9 fg:#1e1e2e bold"
+format = "[$symbol ]($style)"
+
+[os.symbols]
+Arch = "\uf303"
+
+[username]
+show_always = true
+style_user = "bg:#bd93f9 fg:#1e1e2e bold"
+style_root = "bg:#ff5555 fg:#1e1e2e bold"
+format = "[$user]($style)"
+
+[hostname]
+ssh_only = false
+style = "bg:#bd93f9 fg:#1e1e2e bold"
+format = "[@$hostname ]($style)"
+
+[directory]
+style = "bg:#2b213a fg:#f8f8f2 bold"
+read_only = " RO"
+read_only_style = "bg:#2b213a fg:#ff5555 bold"
+truncation_length = 4
+truncate_to_repo = false
+home_symbol = "~"
+format = "[ \uf07c $path ]($style)[$read_only]($read_only_style)"
+
+[git_branch]
+symbol = "\uf418 "
+style = "bg:#2b213a fg:#ff79c6 bold"
+format = "[ on $symbol$branch ]($style)"
+
+[git_status]
+style = "bg:#2b213a fg:#ff79c6 bold"
+format = "[$all_status$ahead_behind]($style)"
+conflicted = "=${count} "
+ahead = "up${count} "
+behind = "down${count} "
+diverged = "div${ahead_count}/${behind_count} "
+up_to_date = ""
+untracked = "?${count} "
+stashed = "stash${count} "
+modified = "!${count} "
+staged = "+${count} "
+renamed = "ren${count} "
+deleted = "x${count} "
+
+[python]
+symbol = "\ue235 "
+style = "bg:#2b213a fg:#8be9fd bold"
+format = "[ via $symbol$version ]($style)"
+
+[nodejs]
+symbol = "\ue718 "
+style = "bg:#2b213a fg:#50fa7b bold"
+format = "[ via $symbol$version ]($style)"
+
+[cmd_duration]
+min_time = 1000
+style = "bg:#2b213a fg:#f1fa8c bold"
+format = "[ took $duration ]($style)"
+
+[status]
+disabled = false
+symbol = "x"
+style = "bg:#2b213a fg:#ff5555 bold"
+format = "[ $symbol $status ]($style)"
+
+[character]
+success_symbol = "[ ❯](bold #bd93f9) "
+error_symbol = "[ ❯](bold #ff5555) "
+vimcmd_symbol = "[ ❮](bold #f1fa8c) "
+
+[time]
+disabled = true
+
+[package]
+disabled = true
+
+[rust]
+disabled = true
+
+[golang]
+disabled = true
+
+[java]
+disabled = true
+
+[docker_context]
+disabled = true
+
+[kubernetes]
+disabled = true
+EOF
+
+touch "$HOME/.zshrc"
+
+sed -i '/# >>> caxit-zsh >>>/,/# <<< caxit-zsh <<</d' "$HOME/.zshrc"
+
+cat >> "$HOME/.zshrc" <<'EOF'
+
+# >>> caxit-zsh pico pal que lee >>>
+eval "$(starship init zsh)"
+
+[ -f /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh ] && \
+  source /usr/share/zsh/plugins/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+[ -f /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh ] && \
+  source /usr/share/zsh/plugins/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+# <<< caxit-zsh <<<
+EOF
+
+python - <<'PY'
+from pathlib import Path
+Path.home().joinpath(".config/starship.toml").read_bytes().decode("utf-8")
+PY
+
+starship explain >/dev/null
+
+if [ "${SHELL:-}" != "/usr/bin/zsh" ]; then
+  chsh -s /usr/bin/zsh || true
+fi
+
+exec zsh
