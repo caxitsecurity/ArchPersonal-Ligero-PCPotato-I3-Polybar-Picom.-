@@ -1,0 +1,65 @@
+# Arch / Linux temporary files
+.cache/
+.local/share/Trash/
+*.log
+*.tmp
+*.swp
+*.swo
+*~
+
+# Shell history / private local state
+.bash_history
+.zsh_history
+.lesshst
+.python_history
+.sqlite_history
+.mysql_history
+.psql_history
+
+# Secrets / credentials
+.env
+.env.*
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+id_rsa
+id_rsa.pub
+id_ed25519
+id_ed25519.pub
+known_hosts
+*.kdbx
+*.age
+*.asc
+
+# GitHub / API / app tokens
+tokens.txt
+secrets.txt
+credentials*
+config/*/credentials*
+
+# Browser / session data
+.mozilla/
+.config/google-chrome/
+.config/chromium/
+.config/discord/
+.config/spotify/
+
+# Screenshots / media / personal docs
+Pictures/
+Imágenes/
+Downloads/
+Descargas/
+Documents/
+Documentos/
+Videos/
+Música/
+Music/
+
+# Generated backups
+backups/
+*.tar
+*.tar.gz
+*.zip
+*.7z
