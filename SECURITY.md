@@ -1,6 +1,6 @@
 # Seguridad del repositorio
 
-Este repositorio es público y está pensado solo para configuración del sistema.
+Este repositorio es personal para mi Arch Linux
 
 ## No subir nunca
 
